@@ -70,8 +70,15 @@ func getAvaliableTimeSlots() ([]timeSlot, error) {
 	for _, slot := range timeSlotResponse {
 		start, _ := strconv.Atoi(slot.Start)
 		startTimeConfig, _ := strconv.Atoi(os.Getenv("START_TIME"))
+		dateLimit := time.Now()
+		dateLimit.AddDate(0, 0, 30)
+		date, err := time.Parse("20060102", slot.Date)
 
-		if slot.Availability != "UNAVAILABLE" && start > startTimeConfig {
+		if err != nil {
+			continue
+		}
+
+		if slot.Availability != "UNAVAILABLE" && start > startTimeConfig && date.Before(dateLimit) {
 			result = append(result, slot)
 		}
 	}
